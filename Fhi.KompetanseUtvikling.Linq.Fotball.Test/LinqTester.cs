@@ -16,7 +16,8 @@ public class LinqTester : TestsBase
     [Test]
     public void Test01_Finn_Antall_Ulike_Lag()
     {
-        var counts = footBallContext.Set<ScoreResult>().Select(e => e.HomeTeamName).Distinct().Count();
+        //TODO : Add missing Code!
+
         Assert.That(counts, Is.EqualTo(20));
     }
 
@@ -24,17 +25,7 @@ public class LinqTester : TestsBase
     [Test]
     public void Test03_Finn_Antall_Kamper_Spilt_pr_AarMnd()
     {
-        var results = footBallContext.Set<ScoreResult>()
-             .GroupBy(e => new { e.Date.Year, e.Date.Month })
-             .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
-             .Select(g =>
-             new
-             {
-                 g.Key.Year,
-                 g.Key.Month,
-                 Antall = g.Count()
-             })
-             .ToList();
+         //TODO : Add missing Code!
 
           //assert
         Assert.That(results.Count, Is.EqualTo(10));
@@ -53,17 +44,7 @@ public class LinqTester : TestsBase
     [Test]
     public void Test04a_Lag_Ferdigspilt_Tabell()
     {
-        var results = footBallContext.Set<ScoreResult>()
-            .Select(e => new { Team = e.HomeTeamName, Points =  e.HG > e.AG ? 3 : e.HG == e.AG ? 1 : 0})
-            
-            .Concat(
-                 footBallContext.Set<ScoreResult>()
-                .Select(e => new { Team = e.AwayTeamName, Points = e.HG < e.AG ? 3 : e.HG == e.AG ? 1 : 0})
-            )
-         .GroupBy(e => e.Team)
-         .Select(g => new { Team = g.Key, TotalPoints = g.Sum(s => s.Points) })
-         .OrderByDescending(e => e.TotalPoints)
-         .ToList();
+        //TODO : Add missing Code!
 
           //assert
         Assert.That(results.Count, Is.EqualTo(20));
@@ -82,13 +63,8 @@ public class LinqTester : TestsBase
     [Test]
     public void Test05_List_Alle_kamper_Partisjonert_paa_Team()
     {
-   
-        var results = footBallContext.Set<ScoreResult>()
-            .OrderBy(e => e.HomeTeamName)
-            .ThenByDescending(e => e.HG - e.AG)
-            .ThenByDescending(e => e.HG)
-            .ToList();
-
+      //TODO : Add missing Code!
+    
           //assert
 
         Assert.That(results.Count, Is.EqualTo(380));
@@ -106,23 +82,8 @@ public class LinqTester : TestsBase
     [Test]
     public void Test06_Lag_oversikt_over_uavgjorte_kamper()
     {
-
-        var filtered = footBallContext.Set<ScoreResult>()
-            .Where(e => e.HG == e.AG)
-            .Select(e=>new {e.HomeTeamName,e.AwayTeamName })
-            .ToList();
-
-        var results = filtered
-                     .Select(e => e.HomeTeamName)
-                     .Concat(filtered.Select(e => e.AwayTeamName))
-                     .GroupBy(e => e)
-                     .Select(s => new
-                     {
-                         TeamName = s.Key,
-                         Count = s.Count()
-                     })
-                     .OrderByDescending(e => e.Count);
-
+           //TODO : Add missing Code!
+     
         //assert
         Assert.That(results.Count, Is.EqualTo(20));
         Assert.That(results.ElementAt(0).TeamName, Is.EqualTo("Southampton"));
@@ -140,29 +101,7 @@ public class LinqTester : TestsBase
     [Test]
     public void Test07a_Hvilket_Team_Tapte_Fleste_Hjemmpekamper_Paa_Rad()
     {
-        var results = footBallContext.Set<ScoreResult>()
-            .GroupBy(e => e.HomeTeamName).ToList()
-            .Select(g => new
-            {
-                TeamName = g.Key,
-                Max = g.OrderBy(e => e.Date).Aggregate(new MaxData(), (MaxData total, ScoreResult next) =>
-                {
-                    if (next.HG < next.AG)
-                    {
-                        total.Current++;
-                        if (total.Current > total.Max)
-                            total.Max = total.Current;
-                    }
-                    else
-                        total.Current = 0;
-
-                    return total;
-
-                }).Max
-
-            })
-            .OrderByDescending(e => e.Max)
-            .First();
+     //TODO : Add missing Code!
 
         //assert
         Assert.That(results.TeamName, Is.EqualTo("Newcastle"));
@@ -174,29 +113,7 @@ public class LinqTester : TestsBase
     [Test]
     public void Test07b_Hvilke_team_tapte_minst_3_hjemmpekamper_på_rad()
     {
-        var results = footBallContext.Set<ScoreResult>()
-            .GroupBy(e => e.HomeTeamName).ToList()
-            .Select(g => new
-            {
-                TeamName = g.Key,
-                Max = g.OrderBy(e => e.Date).Aggregate(new MaxData(), (MaxData total, ScoreResult next) =>
-                {
-                    if (next.HG < next.AG)
-                    {
-                        total.Current++;
-                        if (total.Current > total.Max)
-                            total.Max = total.Current;
-                    }
-                    else
-                        total.Current = 0;
-
-                    return total;
-
-                }).Max
-
-            })
-            .Where(e => e.Max >= 3)
-            .OrderByDescending(e => e.Max);
+        //TODO : Add missing Code!  
 
         //assert
         Assert.That(results.Count, Is.EqualTo(6));
@@ -213,33 +130,8 @@ public class LinqTester : TestsBase
     [Test]
     public void Test07c_Hvilke_team_hadde_minst_2_perioder_sekevenser_med_2_hjemmtap_på_rad()
     {
-        var results = footBallContext.Set<ScoreResult>()
-            .GroupBy(e => e.HomeTeamName).ToList()
-            .Select(g => new
-            {
-                TeamName = g.Key,
-                Counts = g.OrderBy(e => e.Date).Aggregate(new MaxDataCounts(), (MaxDataCounts total, ScoreResult next) =>
-                {
-                    if (next.HG < next.AG)
-                    {
-                        total.Current++;
-                        if (total.Current > total.Max)
-                            total.Max = total.Current;
-                        if (total.Current == 2)
-                            total.Counts++;
-
-                    }
-                    else
-                        total.Current = 0;
-
-                    return total;
-
-                }).Counts
-
-            })
-            .Where(e => e.Counts >= 2)
-            .OrderByDescending(e => e.Counts);
-
+           //TODO : Add missing Code!
+   
         //assert
         Assert.That(results.Count, Is.EqualTo(4));
         Assert.That(results.Select(e=>e.TeamName).Contains("Swansea"), Is.True);
@@ -253,29 +145,8 @@ public class LinqTester : TestsBase
     [Test]
     public void Test09_Ranksjere_Team()
     {
-        var results = footBallContext.Set<ScoreResult>()
-               .GroupBy(e => e.HomeTeamName).ToList()
-               .Select(g => new
-               {
-                   TeamName = g.Key,
-                   Points = g.OrderBy(e => e.Date).Skip(5).Take(5).Aggregate(0, (total, next) =>
-                   {
-                       if (next.HG < next.AG) return total;
-                       if (next.HG == next.AG) return total + 1;
-                       return total + 3;
-                   })
-               })
-               .OrderByDescending(e => e.Points)
-               .Select(e =>
-               new
-               {
-                   e.TeamName,
-                   e.Points,
-                   Rank = Ranker.Rank(e.Points)
-
-               }).ToList();
-
-
+           //TODO : Add missing Code!
+     
           //assert
         var element = (results.Where(e => e.TeamName.Equals("Chelsea")).First());
         Assert.That(element.Rank, Is.EqualTo(1));
@@ -292,12 +163,8 @@ public class LinqTester : TestsBase
     [Test]
     public void Test10_Teams_In_London()
     {
-        var teamNames = footBallContext.Set<ScoreResult>()
-             .Where(e => e.City == "London")
-            .Select(e => e.HomeTeamName)
-            .Distinct()
-            .ToList();
-
+           //TODO : Add missing Code!
+  
           //assert
         Assert.That(teamNames.Count, Is.EqualTo(6));
         Assert.That(teamNames.Contains("Arsenal"), Is.True);
@@ -308,22 +175,8 @@ public class LinqTester : TestsBase
     [Test]
     public void Test11a_London_Tabell()
     {
-        IQueryable<ScoreResult> londonMatches = footBallContext.Set<ScoreResult>()
-              .Where(e => CityTeams.London.Contains(e.HomeTeamName))
-              .Where(e => CityTeams.London.Contains(e.AwayTeamName));
-
-
-        var results = londonMatches
-                 .Select(e => new { Team = e.HomeTeamName, Points = e.HG > e.AG ? 3 : e.HG == e.AG ? 1 : 0 })
-            .Concat(
-                 londonMatches
-                .Select(e => new { Team = e.AwayTeamName, Points = e.HG < e.AG ? 3 : e.HG == e.AG ? 1 : 0 })
-            )
-         .GroupBy(e => e.Team)
-         .Select(g => new { Team = g.Key, TotalPoints = g.Sum(s => s.Points) })
-         .OrderByDescending(e => e.TotalPoints)
-         .ToList();
-
+           //TODO : Add missing Code!
+   
           //assert
         Assert.That(results.Count, Is.EqualTo(6));
         Assert.That(results.ElementAt(0).Team, Is.EqualTo("Tottenham"));
@@ -340,23 +193,8 @@ public class LinqTester : TestsBase
     [Test]
     public void Test11b_SuperLiga_Tabell()
     {
-        var bigCities = CityTeams.London.Union(CityTeams.Liverpool).Union(CityTeams.Manchester);
-
-        IQueryable<ScoreResult> cityMatches = footBallContext.Set<ScoreResult>()
-              .Where(e => bigCities.Contains(e.HomeTeamName))
-              .Where(e => bigCities.Contains(e.AwayTeamName));
-
-        var results = cityMatches
-                 .Select(e => new { Team = e.HomeTeamName, Points = e.HG > e.AG ? 3 : e.HG == e.AG ? 1 : 0 })
-            .Concat(
-                 cityMatches
-                .Select(e => new { Team = e.AwayTeamName, Points = e.HG < e.AG ? 3 : e.HG == e.AG ? 1 : 0 })
-            )
-         .GroupBy(e => e.Team)
-         .Select(g => new { Team = g.Key, TotalPoints = g.Sum(s => s.Points) })
-         .OrderByDescending(e => e.TotalPoints)
-         .ToList();
-
+           //TODO : Add missing Code!
+     
           //assert
         Assert.That(results.Count, Is.EqualTo(10));
         Assert.That(results.ElementAt(0).Team, Is.EqualTo("Man City"));
@@ -374,27 +212,7 @@ public class LinqTester : TestsBase
     [Test]
     public void Test11c_CityLiga_Tabell()
     {
-        var bigCities = CityTeams.London.Union(CityTeams.Liverpool).Union(CityTeams.Manchester);
-
-        IQueryable<ScoreResult> cityMatches = footBallContext.Set<ScoreResult>()
-              .Where(e => bigCities.Contains(e.HomeTeamName))
-              .Where(e => bigCities.Contains(e.AwayTeamName));
-
-        var results1 = cityMatches
-                 .Select(e => new { Team = e.HomeTeamName, Points = e.HG > e.AG ? 3 : e.HG == e.AG ? 1 : 0 })
-            .Concat(
-                 cityMatches
-                .Select(e => new { Team = e.AwayTeamName, Points = e.HG < e.AG ? 3 : e.HG == e.AG ? 1 : 0 })
-            )
-         .GroupBy(e => e.Team)
-         .Select(g => new { Team = g.Key, TotalPoints = g.Sum(s => s.Points) })
-         .OrderByDescending(e => e.TotalPoints).ToList();
-
-
-        var results = results1.GroupBy(e => CityTeams.TeamToCity(e.Team))
-              .Select(g => new { Team = g.Key, TotalPoints = g.Sum(s => s.TotalPoints) })
-              .OrderByDescending(e => e.TotalPoints);
-
+      //TODO : Add missing Code!
 
           //assert
         Assert.That(results.Count, Is.EqualTo(3));
@@ -412,25 +230,7 @@ public class LinqTester : TestsBase
     [Test]
     public void Test12_HomeandAway_ligaTabell()
     {
-        IQueryable<ScoreResult> matches = footBallContext.Set<ScoreResult>();
-
-        var results = matches.Join(matches,
-            a => new { A = a.HomeTeamName, B = a.AwayTeamName },
-            b => new { A = b.AwayTeamName, B = b.HomeTeamName },
-            (a, b) => new { TeamName = a.HomeTeamName, T1goals = a.HG + b.AG, T2goals = b.HG + a.AG })
-        .Select(e => new
-        {
-            e.TeamName,
-            Points = e.T1goals > e.T2goals ? 3 : e.T1goals == e.T2goals ? 1 : 0
-        })
-        .GroupBy(e => e.TeamName)
-        .Select(g => new { Team = g.Key, TotalPoints = g.Sum(s => s.Points) })
-        .OrderByDescending(e => e.TotalPoints)
-        .ToList();
-
-        Assert.That(results.Count, Is.EqualTo(20));
-        Assert.That(results.ElementAt(0).Team, Is.EqualTo("Man City"));
-        Assert.That(results.ElementAt(0).TotalPoints, Is.EqualTo(55));
+           //TODO : Add missing Code!
 
           //assert
         foreach (var item in results)
@@ -443,25 +243,7 @@ public class LinqTester : TestsBase
     [Test]
     public void Test13_Kamper_Pr_mnd()
     {
-        DateTime startMnd = new DateTime(2017, 01, 01);
-
-        var matches = footBallContext.Set<ScoreResult>()
-           .GroupBy(e => new { e.Date.Year, e.Date.Month })
-           .ToList()
-           .Select(g => new
-           {
-               g.Key,
-               Count=g.Count()
-           });
-
-        var results = Enumerable.Range(0, 24).Select(e => startMnd.AddMonths(e))
-        .Select(e =>
-        new
-        {
-            e.Year,
-            e.Month,
-            Count = matches.Where(g => g.Key.Year == e.Year && g.Key.Month == e.Month).Select(e => e.Count).FirstOrDefault()
-        });
+           //TODO : Add missing Code!
 
           //assert
         Assert.That(results.Count, Is.EqualTo(24));
@@ -480,33 +262,7 @@ public class LinqTester : TestsBase
     [Test]
     public void Test18_Lengste_seiersrekke()
     {
-        var results = footBallContext.Set<ScoreResult>()
-             .Select(e => new { Team=e.HomeTeamName,Win=e.HG > e.AG,e.Date })
-             .Concat(
-                  footBallContext.Set<ScoreResult>()
-                 .Select(e => new { Team = e.AwayTeamName, Win = e.HG < e.AG, e.Date })
-             ).ToList()
-          .GroupBy(e => e.Team)
-          .Select(g => new
-              {
-                  Team = g.Key,
-                  Lengste = g.OrderBy(e=>e.Date).Aggregate(new MaxData(), ( total,   next) =>
-                     {
-                         if (next.Win)
-                         {
-                             total.Current++;
-                             if (total.Current > total.Max)
-                                 total.Max = total.Current;
-                         }
-                         else
-                             total.Current = 0;
-
-                         return total;
-
-                     }).Max
-              }
-          )
-          .OrderByDescending(e => e.Lengste);
+           //TODO : Add missing Code!
 
           //assert
         Assert.That(results.Count, Is.EqualTo(20));
