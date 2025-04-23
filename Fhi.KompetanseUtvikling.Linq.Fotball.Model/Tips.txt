@@ -1,0 +1,165 @@
+﻿ public void Test00_Antall_ScoreResult()
+    {
+        .Count();
+    }
+
+
+  public void Test01_Finn_Antall_Ulike_Lag()
+    {
+       
+        .Select()
+        .Distinct()
+        .Count();
+    }
+
+
+ public void Test03_Finn_Antall_Kamper_Spilt_pr_AarMnd()
+    {
+             .GroupBy()
+             .OrderBy()
+             .Select(g =>
+             new
+             {
+                  *
+                 Antall = g.Count()
+             })
+             .ToList();
+
+    }
+
+
+
+     public void Test04a_Lag_Ferdigspilt_Tabell()
+    {
+            .Select(e => new { Team = e.HomeTeamName, *})
+            .Concat(
+                 .Select(e => new { Team = e.AwayTeamName, *})
+            )
+         .GroupBy(e => e.Team)
+         .Select(g => new { Team = g.Key, TotalPoints =  *) })
+         .OrderByDescending()
+         .ToList();
+    }
+
+
+     public void Test05_List_Alle_kamper_Partisjonert_paa_Team()
+    {
+   
+            .OrderBy(e => e.HomeTeamName)
+            .ThenByDescending( )
+            .ThenByDescending()
+            .ToList();
+    }
+
+
+     public void Test06_Lag_oversikt_over_uavgjorte_kamper()
+    {
+
+        var filtered = footBallContext.Set<ScoreResult>()
+            .Where()
+            .Select()
+            .ToList();
+
+        var results = filtered
+                     .Select(e => e.HomeTeamName)
+                     .Concat(filtered.Select(e => e.AwayTeamName))
+                     .GroupBy(e => e)
+                     .Select(s => new
+                     {
+                         TeamName = s.Key,
+                         Count = s.Count()
+                     })
+                     .OrderByDescending();
+
+       
+    }
+
+
+     public void Test07a_Hvilket_Team_Tapte_Fleste_Hjemmpekamper_Paa_Rad()
+    {
+        var results = footBallContext.Set<ScoreResult>()
+            .GroupBy(e => e.HomeTeamName).ToList()
+            .Select(g => new
+            {
+                TeamName = g.Key,
+                Max = g.OrderBy(e => e.Date).Aggregate(new MaxData(), (MaxData total, ScoreResult next) =>
+                {
+                    *
+
+                }).Max
+
+            })
+            .OrderByDescending(e => e.Max)
+            .First();
+    }
+
+class MaxData
+{
+    public int Current { get; set; } = 0;
+    public int Max { get; set; } = 0;
+
+}
+
+
+
+ public void Test09_Ranksjere_Team()
+    {
+               .GroupBy().ToList()
+               .Select(g => new
+               {
+                   TeamName = g.Key,
+                   Points = g.OrderBy(e => e.Date).Skip().Take().Aggregate(0, (total, next) =>
+                   {
+                       *
+                   })
+               })
+               .OrderByDescending()
+               .Select(e =>
+               new
+               {
+                   e.TeamName,
+                   e.Points,
+                   Rank = Ranker.Rank(e.Points)
+
+               }).ToList();
+
+     
+    }
+
+  class Ranker
+{
+    static int currentPoint = 10000;
+    static int currentRank = 0;
+    static int nextRank = 1;
+
+    public static int Rank(int points)
+    {
+        if (points < currentPoint)
+        {
+            currentPoint = points;
+            currentRank = nextRank;
+        }
+
+        nextRank++;
+        return currentRank;
+    }
+}
+
+
+public void Test11a_London_Tabell()
+    {
+        IQueryable<ScoreResult> londonMatches = footBallContext.Set<ScoreResult>()
+              .Where(e => CityTeams.London.Contains(e.HomeTeamName))
+              .Where(e => CityTeams.London.Contains(e.AwayTeamName));
+
+              *
+    }
+
+
+
+ [Test]
+    public void Test11c_CityLiga_Tabell()
+    {
+        var bigCities = CityTeams.London.Union(CityTeams.Liverpool).Union(CityTeams.Manchester);
+
+    }
